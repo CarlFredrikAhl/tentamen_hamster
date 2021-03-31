@@ -10,12 +10,26 @@ namespace tentamen_hamster
     class Program
     {
         static List<Hamster> hamsters;
+        static Stack<Hamster> maleHamsters;
+        static Stack<Hamster> femaleHamsters;
+        static ExerciseSpace exerciseSpace;
+        static Cage[] maleCages;
+        static Cage[] femaleCages;
 
         static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Magenta;
 
+            exerciseSpace = new ExerciseSpace();
+
+            maleCages = new Cage[5];
+            femaleCages = new Cage[5];
+
+            maleHamsters = new Stack<Hamster>();
+            femaleHamsters = new Stack<Hamster>();
+
             ImportHamsters();
+            CheckingIn();
 
             Menu();
         }
@@ -32,6 +46,49 @@ namespace tentamen_hamster
         static void ImportHamsters()
         {
             hamsters = ProcessFile("Hamsterlista30.csv");
+
+            foreach (Hamster hamster in hamsters.Where(hamster => hamster.Gender == Gender.Male))
+            {
+                maleHamsters.Push(hamster);
+            }
+
+            foreach (Hamster hamster in hamsters.Where(hamster => hamster.Gender == Gender.Female))
+            {
+                femaleHamsters.Push(hamster);
+            }
+        }
+
+        static void CheckingIn()
+        {
+            //Males
+            //Loop 5 times
+            for (int i = 0; i < maleCages.Length; i++)
+            {
+                maleCages[i] = new Cage();
+                //maleCages[i].Hamsters = new List<Hamster>();
+
+                //Loop 3 times
+                for (int y = 0; y < 3; y++)
+                {
+                    if(maleHamsters.Count != 0)
+                        maleCages[i].Hamsters.Add(maleHamsters.Pop());
+                }
+            }
+
+            //Females
+            //Loop 5 times
+            for (int i = 0; i < femaleCages.Length; i++)
+            {
+                femaleCages[i] = new Cage();
+                //femaleCages[i].Hamsters = new List<Hamster>();
+
+                //Loop 3 times
+                for (int y = 0; y < 3; y++)
+                {
+                    if (femaleHamsters.Count != 0)
+                        femaleCages[i].Hamsters.Add(femaleHamsters.Pop());
+                }
+            }
         }
 
         private static List<Hamster> ProcessFile(string path)
@@ -45,7 +102,7 @@ namespace tentamen_hamster
             var columns = line.Split(';');
 
             //Female
-            if(columns[2] == "K")
+            if (columns[2] == "K")
             {
                 return new Hamster
                 {
@@ -57,8 +114,9 @@ namespace tentamen_hamster
                     TimeCheckedIn = DateTime.Now,
                     TimeLastExercise = null
                 };
-            
-            } else
+
+            }
+            else
             {
                 return new Hamster
                 {

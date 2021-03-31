@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using tentamen_hamster;
 
 namespace tentamen_hamster.Migrations
 {
     [DbContext(typeof(AppContext))]
-    partial class AppContextModelSnapshot : ModelSnapshot
+    [Migration("20210331094527_fixedicollectionwithid")]
+    partial class fixedicollectionwithid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,6 +51,9 @@ namespace tentamen_hamster.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("HamsterId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
@@ -63,6 +68,9 @@ namespace tentamen_hamster.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("HamsterId")
+                        .HasColumnType("int");
 
                     b.HasKey("ExerciseSpaceId");
 
@@ -123,15 +131,13 @@ namespace tentamen_hamster.Migrations
 
             modelBuilder.Entity("tentamen_hamster.Hamster", b =>
                 {
-                    b.HasOne("tentamen_hamster.Cage", "Cage")
+                    b.HasOne("tentamen_hamster.Cage", null)
                         .WithMany("Hamsters")
                         .HasForeignKey("CageId");
 
                     b.HasOne("tentamen_hamster.ExerciseSpace", null)
                         .WithMany("Hamsters")
                         .HasForeignKey("ExerciseSpaceId");
-
-                    b.Navigation("Cage");
                 });
 
             modelBuilder.Entity("tentamen_hamster.Cage", b =>
