@@ -10,11 +10,18 @@ namespace tentamen_hamster
     class Program
     {
         static List<Hamster> hamsters;
+        
         static Stack<Hamster> maleHamsters;
         static Stack<Hamster> femaleHamsters;
+        
         static ExerciseSpace exerciseSpace;
+        
         static Cage[] maleCages;
         static Cage[] femaleCages;
+
+        static Timer[] timers = new Timer[1];
+
+        static int ticksPerSec;
 
         static void Main(string[] args)
         {
@@ -32,6 +39,37 @@ namespace tentamen_hamster
             CheckingIn();
 
             Menu();
+
+            timers[0] = new Timer(new TimerCallback(TimerTest), null, 0, 1000 / ticksPerSec);
+
+            while (true)
+            {
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (key.KeyChar == '1')
+                {
+                    for (int i = 0; i < timers.Length; i++)
+                    {
+                        if (timers[i] == null)
+                        {
+                            Console.WriteLine(
+                                Environment.NewLine +
+                                "Timer Not " +
+                                "Yet Started" +
+                                Environment.NewLine);
+                            continue;
+                        }
+                        else
+                        {
+                            timers[i].Change(Timeout.Infinite, Timeout.Infinite);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void TimerTest(object state)
+        {
+            Console.WriteLine("test");
         }
 
         static void Menu()
@@ -40,7 +78,7 @@ namespace tentamen_hamster
             int days = int.Parse(Console.ReadLine());
 
             Console.WriteLine("Input amount of ticks per second: ");
-            int ticksPerSec = int.Parse(Console.ReadLine());
+            ticksPerSec = int.Parse(Console.ReadLine());
         }
 
         static void ImportHamsters()
