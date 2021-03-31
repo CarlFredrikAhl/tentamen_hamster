@@ -12,7 +12,7 @@ namespace tentamen_hamster
         public int Age { get; set; }
         public Gender Gender { get; set; }
         public string OwnerName { get; set; }
-        public DateTime TimeCheckedIn { get; set; } 
-        public DateTime TimeLastExercise { get; set; }
+        public DateTime? TimeCheckedIn { get; set; } 
+        public DateTime? TimeLastExercise { get; set; }
     }
 }
