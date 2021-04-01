@@ -22,6 +22,7 @@ namespace tentamen_hamster
         static Timer[] timers = new Timer[1];
 
         static int ticksPerSec;
+        static int tickCounter = 0;
 
         static void Main(string[] args)
         {
@@ -42,6 +43,7 @@ namespace tentamen_hamster
 
             timers[0] = new Timer(new TimerCallback(TimerTest), null, 0, 1000 / ticksPerSec);
 
+            //Possability to stop timer
             while (true)
             {
                 ConsoleKeyInfo key = Console.ReadKey();
@@ -70,6 +72,14 @@ namespace tentamen_hamster
         private static void TimerTest(object state)
         {
             Console.WriteLine("test");
+
+            if (tickCounter >= 60)
+            {
+                timers[0].Change(Timeout.Infinite, Timeout.Infinite);
+            }
+                
+
+            tickCounter++;
         }
 
         static void Menu()

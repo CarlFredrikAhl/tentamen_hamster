@@ -7,6 +7,6 @@ namespace tentamen_hamster
     public class ExerciseSpace
     {
         public int ExerciseSpaceId { get; set; }
-        public virtual ICollection<Hamster> Hamsters { get; set; }
+        public virtual Queue<Hamster> Hamsters { get; set; }
     }
 }
