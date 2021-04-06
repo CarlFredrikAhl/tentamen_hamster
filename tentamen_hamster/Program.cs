@@ -22,6 +22,7 @@ namespace tentamen_hamster
         static Timer[] timers = new Timer[1];
 
         static int ticksPerSec;
+        //static readonly int tickTime = 1000 / ticksPerSec;   
         static int tickCounter = 0;
 
         static AppContext hamsterContext;
@@ -47,7 +48,7 @@ namespace tentamen_hamster
 
             timers[0] = new Timer(new TimerCallback(TimerTest), null, 0, 1000 / ticksPerSec);
 
-            ////Possability to stop timer
+            //Possability to stop timer
             //while (true)
             //{
             //    ConsoleKeyInfo key = Console.ReadKey();
@@ -77,13 +78,12 @@ namespace tentamen_hamster
 
         private static void TimerTest(object state)
         {
-            Console.WriteLine("test");
+           Console.WriteLine("tick");
 
             if (tickCounter >= 60)
             {
                 timers[0].Change(Timeout.Infinite, Timeout.Infinite);
             }
-                
 
             tickCounter++;
         }
@@ -99,7 +99,20 @@ namespace tentamen_hamster
 
         static void TakeToExercise()
         {
-            Console.WriteLine(hamsterContext.Cages.Count());
+            //var exerciseHamsters = hamsterContext.Cages
+            //    .OrderBy(x => x.Hamsters.Select(hamster => hamster.TimeLastExercise))
+            //    .Select(x => x.Hamsters).Take(6);
+
+            //foreach (Hamster hamster in exerciseHamsters)
+            //{
+            //    Console.WriteLine(hamster.Name);
+            //}
+
+            //var test = hamsterContext.Hamsters.OrderBy(hamster => hamster.TimeLastExercise)
+            //    .Select(hamster => hamster).Take(6);
+
+            Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
+            Console.WriteLine("Cages context count: " + hamsterContext.Cages.Count());
         }
 
         static void ImportHamsters()
@@ -150,20 +163,35 @@ namespace tentamen_hamster
             }
 
             //Add to database
-            
-            foreach (Cage cage in maleCages)
+
+            if(hamsterContext.Hamsters.Count() != 30)
             {
-                hamsterContext.Cages.Add(cage);
+                foreach (var hamster in hamsters)
+                {
+                    hamsterContext.Hamsters.Add(hamster);
+                    hamsterContext.SaveChanges();
+                }
             }
 
-            foreach (Cage cage in femaleCages)
+            if(hamsterContext.Cages.Count() != 10)
             {
-                hamsterContext.Cages.Add(cage);
-            }
+                foreach (Cage cage in maleCages)
+                {
+                    if (hamsterContext.Cages.Count() < 10)
+                    {
+                        hamsterContext.Cages.Add(cage);
+                        hamsterContext.SaveChanges();
+                    }
+                }
 
-            if(hamsterContext.Cages == null)
-            {
-                hamsterContext.SaveChanges();
+                foreach (Cage cage in femaleCages)
+                {
+                    if (hamsterContext.Cages.Count() < 10)
+                    {
+                        hamsterContext.Cages.Add(cage);
+                        hamsterContext.SaveChanges();
+                    }
+                }
             }
         }
 
