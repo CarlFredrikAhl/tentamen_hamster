@@ -73,7 +73,7 @@ namespace tentamen_hamster
             //    }
             //}
 
-            TakeToExercise();
+            TakeToExercise(Gender.Female);
         }
 
         private static void TimerTest(object state)
@@ -97,22 +97,22 @@ namespace tentamen_hamster
             ticksPerSec = int.Parse(Console.ReadLine());
         }
 
-        static void TakeToExercise()
+        static void TakeToExercise(Gender gender)
         {
-            //var exerciseHamsters = hamsterContext.Cages
-            //    .OrderBy(x => x.Hamsters.Select(hamster => hamster.TimeLastExercise))
-            //    .Select(x => x.Hamsters).Take(6);
+            var exerciseHamsters = hamsterContext.Hamsters.OrderBy(hamster => hamster.TimeLastExercise)
+                .Where(hamster => hamster.Gender == gender)
+                .Select(hamster => hamster).Take(6);
 
-            //foreach (Hamster hamster in exerciseHamsters)
-            //{
-            //    Console.WriteLine(hamster.Name);
-            //}
+            foreach (Hamster hamster in exerciseHamsters)
+            {
+                Console.WriteLine(hamster.Name);
+                
+                hamster.TimeLastExercise = DateTime.Now;
+                //exerciseSpace.Hamsters.Enqueue(hamster);
+            }
 
-            //var test = hamsterContext.Hamsters.OrderBy(hamster => hamster.TimeLastExercise)
-            //    .Select(hamster => hamster).Take(6);
-
-            Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
-            Console.WriteLine("Cages context count: " + hamsterContext.Cages.Count());
+            //Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
+            //Console.WriteLine("Cages context count: " + hamsterContext.Cages.Count());
         }
 
         static void ImportHamsters()
