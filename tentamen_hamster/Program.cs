@@ -24,12 +24,16 @@ namespace tentamen_hamster
         static int ticksPerSec;
         static int tickCounter = 0;
 
+        static AppContext hamsterContext;
+
         static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Magenta;
 
-            exerciseSpace = new ExerciseSpace();
+            hamsterContext = new AppContext();
 
+            exerciseSpace = new ExerciseSpace();
+            
             maleCages = new Cage[5];
             femaleCages = new Cage[5];
 
@@ -43,30 +47,32 @@ namespace tentamen_hamster
 
             timers[0] = new Timer(new TimerCallback(TimerTest), null, 0, 1000 / ticksPerSec);
 
-            //Possability to stop timer
-            while (true)
-            {
-                ConsoleKeyInfo key = Console.ReadKey();
-                if (key.KeyChar == '1')
-                {
-                    for (int i = 0; i < timers.Length; i++)
-                    {
-                        if (timers[i] == null)
-                        {
-                            Console.WriteLine(
-                                Environment.NewLine +
-                                "Timer Not " +
-                                "Yet Started" +
-                                Environment.NewLine);
-                            continue;
-                        }
-                        else
-                        {
-                            timers[i].Change(Timeout.Infinite, Timeout.Infinite);
-                        }
-                    }
-                }
-            }
+            ////Possability to stop timer
+            //while (true)
+            //{
+            //    ConsoleKeyInfo key = Console.ReadKey();
+            //    if (key.KeyChar == '1')
+            //    {
+            //        for (int i = 0; i < timers.Length; i++)
+            //        {
+            //            if (timers[i] == null)
+            //            {
+            //                Console.WriteLine(
+            //                    Environment.NewLine +
+            //                    "Timer Not " +
+            //                    "Yet Started" +
+            //                    Environment.NewLine);
+            //                continue;
+            //            }
+            //            else
+            //            {
+            //                timers[i].Change(Timeout.Infinite, Timeout.Infinite);
+            //            }
+            //        }
+            //    }
+            //}
+
+            TakeToExercise();
         }
 
         private static void TimerTest(object state)
@@ -89,6 +95,11 @@ namespace tentamen_hamster
 
             Console.WriteLine("Input amount of ticks per second: ");
             ticksPerSec = int.Parse(Console.ReadLine());
+        }
+
+        static void TakeToExercise()
+        {
+            Console.WriteLine(hamsterContext.Cages.Count());
         }
 
         static void ImportHamsters()
@@ -136,6 +147,23 @@ namespace tentamen_hamster
                     if (femaleHamsters.Count != 0)
                         femaleCages[i].Hamsters.Add(femaleHamsters.Pop());
                 }
+            }
+
+            //Add to database
+            
+            foreach (Cage cage in maleCages)
+            {
+                hamsterContext.Cages.Add(cage);
+            }
+
+            foreach (Cage cage in femaleCages)
+            {
+                hamsterContext.Cages.Add(cage);
+            }
+
+            if(hamsterContext.Cages == null)
+            {
+                hamsterContext.SaveChanges();
             }
         }
 
