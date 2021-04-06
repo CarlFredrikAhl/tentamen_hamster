@@ -10,8 +10,8 @@ using tentamen_hamster;
 namespace tentamen_hamster.Migrations
 {
     [DbContext(typeof(AppContext))]
-    [Migration("20210406085517_dropcages")]
-    partial class dropcages
+    [Migration("20210406092150_newdatabase")]
+    partial class newdatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -16,7 +16,7 @@ namespace tentamen_hamster
         {
             if (!builder.IsConfigured) 
             {
-                builder.UseSqlServer("Server=LAPTOP-D5UUETOL\\SQLEXPRESS;Database=advCarlFredrikAhl;Trusted_Connection=True; MultipleActiveResultSets=true;");
+                builder.UseSqlServer("Server=LAPTOP-D5UUETOL\\SQLEXPRESS;Database=advCarlFredrikAhl2;Trusted_Connection=True; MultipleActiveResultSets=true;");
                 builder.UseLazyLoadingProxies();
             }
         }
