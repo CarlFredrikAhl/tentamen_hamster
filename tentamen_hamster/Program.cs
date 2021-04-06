@@ -10,12 +10,12 @@ namespace tentamen_hamster
     class Program
     {
         static List<Hamster> hamsters;
-        
+
         static Stack<Hamster> maleHamsters;
         static Stack<Hamster> femaleHamsters;
-        
+
         static ExerciseSpace exerciseSpace;
-        
+
         static Cage[] maleCages;
         static Cage[] femaleCages;
 
@@ -33,55 +33,73 @@ namespace tentamen_hamster
 
             hamsterContext = new AppContext();
 
-            exerciseSpace = new ExerciseSpace();
-            
-            maleCages = new Cage[5];
-            femaleCages = new Cage[5];
+            using (hamsterContext)
+            {
+                exerciseSpace = new ExerciseSpace();
+                exerciseSpace.Hamsters = new Queue<Hamster>();
+                maleCages = new Cage[5];
+                femaleCages = new Cage[5];
 
-            maleHamsters = new Stack<Hamster>();
-            femaleHamsters = new Stack<Hamster>();
+                maleHamsters = new Stack<Hamster>();
+                femaleHamsters = new Stack<Hamster>();
 
-            ImportHamsters();
-            CheckingIn();
+                ImportHamsters();
+                CheckingIn();
 
-            Menu();
+                Menu();
 
-            timers[0] = new Timer(new TimerCallback(TimerTest), null, 0, 1000 / ticksPerSec);
+                List<Cage> emptyCages = new List<Cage>();
+                TakeToExercise(Gender.Female, out emptyCages);
 
-            //Possability to stop timer
-            //while (true)
-            //{
-            //    ConsoleKeyInfo key = Console.ReadKey();
-            //    if (key.KeyChar == '1')
-            //    {
-            //        for (int i = 0; i < timers.Length; i++)
-            //        {
-            //            if (timers[i] == null)
-            //            {
-            //                Console.WriteLine(
-            //                    Environment.NewLine +
-            //                    "Timer Not " +
-            //                    "Yet Started" +
-            //                    Environment.NewLine);
-            //                continue;
-            //            }
-            //            else
-            //            {
-            //                timers[i].Change(Timeout.Infinite, Timeout.Infinite);
-            //            }
-            //        }
-            //    }
-            //}
+                timers[0] = new Timer(new TimerCallback(Exercise), null, 0, 1000 / ticksPerSec);
 
-            TakeToExercise(Gender.Female);
+                //Possability to stop timer
+                while (true)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey();
+                    if (key.KeyChar == '1')
+                    {
+                        for (int i = 0; i < timers.Length; i++)
+                        {
+                            if (timers[i] == null)
+                            {
+                                Console.WriteLine(
+                                    Environment.NewLine +
+                                    "Timer Not " +
+                                    "Yet Started" +
+                                    Environment.NewLine);
+                                continue;
+                            }
+                            else
+                            {
+                                timers[i].Change(Timeout.Infinite, Timeout.Infinite);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+
         }
 
-        private static void TimerTest(object state)
+        private static void Exercise(object state)
         {
-           Console.WriteLine("tick");
+            //Console.WriteLine("tick");
+
+            Console.WriteLine("Tick: " + tickCounter);
+
+            
 
             if (tickCounter >= 60)
             {
+                Console.WriteLine("Time's up, change hamsters");
+                Console.WriteLine("Current hamsters");
+                for (int i = 0; i < exerciseSpace.Hamsters.Count; i++)
+                {
+                    Console.WriteLine(exerciseSpace.Hamsters.ElementAt(i).Name);
+                }
                 timers[0].Change(Timeout.Infinite, Timeout.Infinite);
             }
 
@@ -97,20 +115,29 @@ namespace tentamen_hamster
             ticksPerSec = int.Parse(Console.ReadLine());
         }
 
-        static void TakeToExercise(Gender gender)
+        static void TakeToExercise(Gender gender, out List<Cage> emptyCages)
         {
+            //This is to know which cages to put back the hamster when they 
+            //get dequeued from exerciseSpace
+            emptyCages = new List<Cage>();
+
             var exerciseHamsters = hamsterContext.Hamsters.OrderBy(hamster => hamster.TimeLastExercise)
-                .Where(hamster => hamster.Gender == gender)
-                .Select(hamster => hamster).Take(6);
+                .Where(hamster => hamster.Gender == gender).Select(hamster => hamster).Take(6);
 
             foreach (Hamster hamster in exerciseHamsters)
             {
-                Console.WriteLine(hamster.Name);
-                
-                hamster.TimeLastExercise = DateTime.Now;
-                //exerciseSpace.Hamsters.Enqueue(hamster);
-            }
+                //Console.WriteLine(hamster.Name);
 
+                //Remove hamster from it's cage
+                Cage hamsterCage = hamsterContext.Cages.Single(x => x.Hamsters.Contains(hamster));
+                emptyCages.Add(hamsterCage);
+                hamsterCage.Hamsters.Remove(hamster);
+                hamsterContext.Cages.Update(hamsterCage);
+                //hamsterContext.SaveChanges();
+
+                //Add to exercise space
+                exerciseSpace.Hamsters.Enqueue(hamster);
+            }
             //Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
             //Console.WriteLine("Cages context count: " + hamsterContext.Cages.Count());
         }
@@ -142,7 +169,7 @@ namespace tentamen_hamster
                 //Loop 3 times
                 for (int y = 0; y < 3; y++)
                 {
-                    if(maleHamsters.Count != 0)
+                    if (maleHamsters.Count != 0)
                         maleCages[i].Hamsters.Add(maleHamsters.Pop());
                 }
             }
@@ -164,7 +191,7 @@ namespace tentamen_hamster
 
             //Add to database
 
-            if(hamsterContext.Hamsters.Count() != 30)
+            if (hamsterContext.Hamsters.Count() != 30)
             {
                 foreach (var hamster in hamsters)
                 {
@@ -173,7 +200,7 @@ namespace tentamen_hamster
                 }
             }
 
-            if(hamsterContext.Cages.Count() != 10)
+            if (hamsterContext.Cages.Count() != 10)
             {
                 foreach (Cage cage in maleCages)
                 {
