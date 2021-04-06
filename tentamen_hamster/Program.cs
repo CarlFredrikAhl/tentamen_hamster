@@ -100,6 +100,12 @@ namespace tentamen_hamster
                 {
                     Console.WriteLine(exerciseSpace.Hamsters.ElementAt(i).Name);
                 }
+
+                foreach (var item in exerciseSpace.Hamsters)
+                {
+
+                }
+
                 timers[0].Change(Timeout.Infinite, Timeout.Infinite);
             }
 
@@ -123,8 +129,8 @@ namespace tentamen_hamster
 
             var exerciseHamsters = hamsterContext.Hamsters.OrderBy(hamster => hamster.TimeLastExercise)
                 .Where(hamster => hamster.Gender == gender).Select(hamster => hamster).Take(6);
-
-            foreach (Hamster hamster in exerciseHamsters)
+            List<Hamster> hamsterLista = exerciseHamsters.ToList();
+            foreach (Hamster hamster in hamsterLista)
             {
                 //Console.WriteLine(hamster.Name);
 
@@ -133,7 +139,7 @@ namespace tentamen_hamster
                 emptyCages.Add(hamsterCage);
                 hamsterCage.Hamsters.Remove(hamster);
                 hamsterContext.Cages.Update(hamsterCage);
-                //hamsterContext.SaveChanges();
+                hamsterContext.SaveChanges();
 
                 //Add to exercise space
                 exerciseSpace.Hamsters.Enqueue(hamster);
