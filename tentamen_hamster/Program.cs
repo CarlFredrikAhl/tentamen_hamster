@@ -19,6 +19,8 @@ namespace tentamen_hamster
         static Cage[] maleCages;
         static Cage[] femaleCages;
 
+        static List<Cage> emptyCages;
+
         static Timer[] timers = new Timer[1];
 
         static int ticksPerSec;
@@ -48,7 +50,7 @@ namespace tentamen_hamster
 
                 Menu();
 
-                List<Cage> emptyCages = new List<Cage>();
+                emptyCages = new List<Cage>();
                 TakeToExercise(Gender.Female, out emptyCages);
 
                 timers[0] = new Timer(new TimerCallback(Exercise), null, 0, 1000 / ticksPerSec);
@@ -96,14 +98,16 @@ namespace tentamen_hamster
             {
                 Console.WriteLine("Time's up, change hamsters");
                 Console.WriteLine("Current hamsters");
+                
                 for (int i = 0; i < exerciseSpace.Hamsters.Count; i++)
                 {
                     Console.WriteLine(exerciseSpace.Hamsters.ElementAt(i).Name);
                 }
-
-                foreach (var item in exerciseSpace.Hamsters)
+                
+                Console.WriteLine("Cages to put back these hamsters to: ");
+                foreach (var cage in emptyCages.Distinct())
                 {
-
+                    Console.WriteLine(cage.CageId);
                 }
 
                 timers[0].Change(Timeout.Infinite, Timeout.Infinite);
@@ -130,22 +134,53 @@ namespace tentamen_hamster
             var exerciseHamsters = hamsterContext.Hamsters.OrderBy(hamster => hamster.TimeLastExercise)
                 .Where(hamster => hamster.Gender == gender).Select(hamster => hamster).Take(6);
             List<Hamster> hamsterLista = exerciseHamsters.ToList();
+
+            Console.WriteLine("Before removing 6 hamsters: ");
+            var query1 = hamsterContext.Cages.Select(x => x.Hamsters);
+
+            foreach (var item in query1)
+            {
+                for (int i = 0; i < item.Count(); i++)
+                {
+                    Console.WriteLine(item.ElementAt(i).Name);
+                }
+            }
+
             foreach (Hamster hamster in hamsterLista)
             {
                 //Console.WriteLine(hamster.Name);
 
                 //Remove hamster from it's cage
-                Cage hamsterCage = hamsterContext.Cages.Single(x => x.Hamsters.Contains(hamster));
-                emptyCages.Add(hamsterCage);
-                hamsterCage.Hamsters.Remove(hamster);
-                hamsterContext.Cages.Update(hamsterCage);
-                hamsterContext.SaveChanges();
+                var query = hamsterContext.Cages.Select(x => x.Hamsters);
+
+                foreach (var item in query)
+                {
+                    item.Remove(hamster);
+                }
+
+                //hamsterCage.Hamsters.Remove(hamster);
+                //hamsterContext.Cages.Update(hamsterCage);
+                
 
                 //Add to exercise space
                 exerciseSpace.Hamsters.Enqueue(hamster);
             }
+
+            var query2 = hamsterContext.Cages.Select(x => x.Hamsters);
+
+            Console.WriteLine(" \n After: ");
+
+            foreach (var item in query2)
+            {
+                for (int i = 0; i < item.Count(); i++)
+                {
+                    Console.WriteLine(item.ElementAt(i).Name);
+                }
+            }
             //Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
             //Console.WriteLine("Cages context count: " + hamsterContext.Cages.Count());
+
+            hamsterContext.SaveChanges();
         }
 
         static void ImportHamsters()
@@ -197,7 +232,7 @@ namespace tentamen_hamster
 
             //Add to database
 
-            if (hamsterContext.Hamsters.Count() != 30)
+            if (hamsterContext.Hamsters.Count() < 30)
             {
                 foreach (var hamster in hamsters)
                 {
@@ -206,7 +241,7 @@ namespace tentamen_hamster
                 }
             }
 
-            if (hamsterContext.Cages.Count() != 10)
+            if (hamsterContext.Cages.Count() < 10)
             {
                 foreach (Cage cage in maleCages)
                 {
