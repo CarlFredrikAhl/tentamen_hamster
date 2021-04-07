@@ -21,7 +21,7 @@ namespace tentamen_hamster
 
         static List<Cage> emptyCages;
 
-        static Timer[] timers = new Timer[1];
+        static Timer[] timers = new Timer[2];
 
         static int ticksPerSec;
         //static readonly int tickTime = 1000 / ticksPerSec;   
@@ -54,12 +54,13 @@ namespace tentamen_hamster
                 TakeToExercise(Gender.Female, out emptyCages);
 
                 timers[0] = new Timer(new TimerCallback(Exercise), null, 0, 1000 / ticksPerSec);
+                timers[1] = new Timer(new TimerCallback(WriteToLog), null, 0, 1000 / ticksPerSec);
 
-                //Possability to stop timer
+                //Possability to stop timers
                 while (true)
                 {
                     ConsoleKeyInfo key = Console.ReadKey();
-                    if (key.KeyChar == '1')
+                    if (key.KeyChar == 's')
                     {
                         for (int i = 0; i < timers.Length; i++)
                         {
@@ -80,10 +81,6 @@ namespace tentamen_hamster
                     }
                 }
             }
-
-
-
-
         }
 
         private static void Exercise(object state)
@@ -94,7 +91,7 @@ namespace tentamen_hamster
 
             
 
-            if (tickCounter >= 60)
+            if (tickCounter >= 10)
             {
                 Console.WriteLine("Time's up, change hamsters");
                 Console.WriteLine("Current hamsters");
@@ -140,10 +137,10 @@ namespace tentamen_hamster
                 .Where(hamster => hamster.Gender == gender).Select(hamster => hamster).Take(6);
             List<Hamster> hamsterLista = exerciseHamsters.ToList();
 
+            //Temporary code to see which hamsters are in the cages
             Console.WriteLine("Before removing 6 hamsters: ");
             var query1 = hamsterContext.Cages.Select(x => x.Hamsters);
             
-
             foreach (var item in query1)
             {
                 for (int i = 0; i < item.Count(); i++)
@@ -152,42 +149,27 @@ namespace tentamen_hamster
                 }
             }
 
+            //Looping through the exercise hamsters and take them to exercise space
             foreach (Hamster hamster in hamsterLista)
             {
-
                 Cage hamsterCage = hamsterContext.Cages.Single(x => x.Hamsters.Contains(hamster));
                 emptyCages.Add(hamsterCage);
-                //Console.WriteLine(hamster.Name);
-
-                //Remove hamster from it's cage
-                //var query = hamsterContext.Cages.Select(x => x.Hamsters);
-
-                //foreach (var item in query)
-                //{
-                //    item.Remove(hamster);
-                //}
-
-                //hamsterCage.Hamsters.Remove(hamster);
-                //hamsterContext.Cages.Update(hamsterCage);
-
 
                 //Add to exercise space
                 exerciseSpace.Hamsters.Enqueue(hamster);
             }
 
-            //hamsterContext.Cages.RemoveRange(emptyCages);
+            //Remove the exercise hamsters from the cages the cages (emptyCages)
 
-            var query2 = hamsterContext.Cages.Select(x => x.Hamsters);
+            var cageHamsters = hamsterContext.Cages.Select(x => x.Hamsters);
 
             Console.WriteLine(" \n After: ");
 
-            foreach (var item in query2)
+            for (int i = 0; i < cageHamsters.Count(); i++)
             {
-                for (int i = 0; i < item.Count(); i++)
-                {
-                    Console.WriteLine(item.ElementAt(i).Name);
-                }
+                //hamsterContext.Cages.Hamst
             }
+
             //Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
             //Console.WriteLine("Cages context count: " + hamsterContext.Cages.Count());
 
@@ -272,6 +254,13 @@ namespace tentamen_hamster
                     }
                 }
             }
+        }
+
+        static void WriteToLog(object state)
+        {
+            string logData = $"Tick {tickCounter} : {DateTime.Now} \n";
+
+            FileWriter.WriteData("hamster_log", logData);
         }
 
         private static List<Hamster> ProcessFile(string path)
