@@ -21,19 +21,28 @@ namespace tentamen_hamster
 
         static List<Cage> emptyCages;
 
-        static Timer[] timers = new Timer[2];
+        static Timer[] timers = new Timer[3];
 
         static int ticksPerSec;
+        static int daysToRun;
         //static readonly int tickTime = 1000 / ticksPerSec;   
         static int tickCounter = 0;
 
         static AppContext hamsterContext;
+
+        //Current time and day
+        public static DateTime curTime;
+        public static int curDay;
 
         static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Magenta;
 
             hamsterContext = new AppContext();
+
+            //The day starts at 7 at the morning
+            curTime = DateTime.Parse("07:00");
+            curDay = 0;
 
             using (hamsterContext)
             {
@@ -55,6 +64,7 @@ namespace tentamen_hamster
 
                 timers[0] = new Timer(new TimerCallback(Exercise), null, 0, 1000 / ticksPerSec);
                 timers[1] = new Timer(new TimerCallback(WriteToLog), null, 0, 1000 / ticksPerSec);
+                timers[2] = new Timer(new TimerCallback(TickerHandler), null, 0, 1000 / ticksPerSec);
 
                 //Possability to stop timers
                 while (true)
@@ -80,6 +90,23 @@ namespace tentamen_hamster
                         }
                     }
                 }
+            }
+        }
+
+        private static void TickerHandler(object state)
+        {
+            tickCounter++;
+
+            if(tickCounter >= 100)
+            {
+                curDay++;
+            }
+
+            if(curDay > daysToRun)
+            {
+                //End of program
+                Console.WriteLine("End of program");
+                timers[3].Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
 
@@ -114,14 +141,12 @@ namespace tentamen_hamster
 
                 timers[0].Change(Timeout.Infinite, Timeout.Infinite);
             }
-
-            tickCounter++;
         }
 
         static void Menu()
         {
             Console.WriteLine("Input amount of days to run simulation: ");
-            int days = int.Parse(Console.ReadLine());
+            daysToRun = int.Parse(Console.ReadLine());
 
             Console.WriteLine("Input amount of ticks per second: ");
             ticksPerSec = int.Parse(Console.ReadLine());
@@ -258,7 +283,8 @@ namespace tentamen_hamster
 
         static void WriteToLog(object state)
         {
-            string logData = $"Tick {tickCounter} : {DateTime.Now} \n";
+            string logTime = curTime.ToString("HH:mm");
+            string logData = $"Tick {tickCounter} : Day {curDay} : Time {logTime}\n";
 
             FileWriter.WriteData("hamster_log", logData);
         }
