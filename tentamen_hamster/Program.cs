@@ -103,12 +103,17 @@ namespace tentamen_hamster
                 {
                     Console.WriteLine(exerciseSpace.Hamsters.ElementAt(i).Name);
                 }
-                
+
                 Console.WriteLine("Cages to put back these hamsters to: ");
                 foreach (var cage in emptyCages.Distinct())
                 {
                     Console.WriteLine(cage.CageId);
                 }
+
+                //foreach (var item in exerciseSpace.Hamsters)
+                //{
+                //    hamsterContext.Cages.
+                //}
 
                 timers[0].Change(Timeout.Infinite, Timeout.Infinite);
             }
@@ -137,6 +142,7 @@ namespace tentamen_hamster
 
             Console.WriteLine("Before removing 6 hamsters: ");
             var query1 = hamsterContext.Cages.Select(x => x.Hamsters);
+            
 
             foreach (var item in query1)
             {
@@ -148,23 +154,28 @@ namespace tentamen_hamster
 
             foreach (Hamster hamster in hamsterLista)
             {
+
+                Cage hamsterCage = hamsterContext.Cages.Single(x => x.Hamsters.Contains(hamster));
+                emptyCages.Add(hamsterCage);
                 //Console.WriteLine(hamster.Name);
 
                 //Remove hamster from it's cage
-                var query = hamsterContext.Cages.Select(x => x.Hamsters);
+                //var query = hamsterContext.Cages.Select(x => x.Hamsters);
 
-                foreach (var item in query)
-                {
-                    item.Remove(hamster);
-                }
+                //foreach (var item in query)
+                //{
+                //    item.Remove(hamster);
+                //}
 
                 //hamsterCage.Hamsters.Remove(hamster);
                 //hamsterContext.Cages.Update(hamsterCage);
-                
+
 
                 //Add to exercise space
                 exerciseSpace.Hamsters.Enqueue(hamster);
             }
+
+            //hamsterContext.Cages.RemoveRange(emptyCages);
 
             var query2 = hamsterContext.Cages.Select(x => x.Hamsters);
 
