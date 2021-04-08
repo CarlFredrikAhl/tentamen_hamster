@@ -25,8 +25,19 @@ namespace tentamen_hamster
 
         static int ticksPerSec;
         static int daysToRun;
-        //static readonly int tickTime = 1000 / ticksPerSec;   
-        static int tickCounter = 0;
+
+        static int tickCounter;
+        static int TickCounter
+        {
+            get { return tickCounter; }
+            set 
+            { 
+                tickCounter = value;
+
+                //Write to log-file
+                WriteToLog();
+            }
+        }
 
         static AppContext hamsterContext;
 
@@ -43,6 +54,8 @@ namespace tentamen_hamster
             //The day starts at 7 at the morning
             curTime = DateTime.Parse("07:00");
             curDay = 0;
+
+            tickCounter = 0;
 
             using (hamsterContext)
             {
@@ -62,8 +75,11 @@ namespace tentamen_hamster
                 emptyCages = new List<Cage>();
                 TakeToExercise(Gender.Female, out emptyCages);
 
-                timers[0] = new Timer(new TimerCallback(Exercise), null, 0, 1000 / ticksPerSec);
-                timers[1] = new Timer(new TimerCallback(WriteToLog), null, 0, 1000 / ticksPerSec);
+                //TickerHandlerThread
+                //Task tickerTask = Task.Run(TickerHandlerAsync);
+
+                timers[0] = new Timer(new TimerCallback(Exercise), null, 0, (1000 / ticksPerSec));
+                //timers[1] = new Timer(new TimerCallback(WriteToLog), null, 0, (1000 / ticksPerSec));
                 timers[2] = new Timer(new TimerCallback(TickerHandler), null, 0, 1000 / ticksPerSec);
 
                 //Possability to stop timers
@@ -95,30 +111,61 @@ namespace tentamen_hamster
 
         private static void TickerHandler(object state)
         {
-            tickCounter++;
+            TickCounter++;
+            curTime = curTime.AddMinutes(6);
 
-            if(tickCounter >= 100)
+            if(TickCounter >= 100)
             {
                 curDay++;
             }
 
-            if(curDay > daysToRun)
+            if(curDay >= daysToRun)
             {
                 //End of program
                 Console.WriteLine("End of program");
-                timers[3].Change(Timeout.Infinite, Timeout.Infinite);
+
+                //Stop this timer
+                timers[2].Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
+
+        //static async Task TickerHandlerAsync()
+        //{
+        //    while(curDay < daysToRun)
+        //    {
+        //        Console.WriteLine("TickerHandlerAsync tick: " + TickCounter);
+        //        await Task.Delay(1000 / ticksPerSec);
+        //        TickCounter++;
+        //        curTime = curTime.AddMinutes(6);
+
+        //        if (TickCounter >= 100)
+        //        {
+        //            curDay++;
+        //        }
+
+        //        if (curDay > daysToRun)
+        //        {
+        //            //End of program
+        //            Console.WriteLine("End of program");
+
+        //            //Stop all timers
+        //            for (int i = 0; i < timers.Length; i++)
+        //            {
+        //                timers[i].Change(Timeout.Infinite, Timeout.Infinite);
+        //            }
+        //        }
+        //    }
+        //}
 
         private static void Exercise(object state)
         {
             //Console.WriteLine("tick");
 
-            Console.WriteLine("Tick: " + tickCounter);
+            //Console.WriteLine("Tick: " + TickCounter);
 
             
 
-            if (tickCounter >= 10)
+            if (TickCounter >= 10)
             {
                 Console.WriteLine("Time's up, change hamsters");
                 Console.WriteLine("Current hamsters");
@@ -182,6 +229,7 @@ namespace tentamen_hamster
 
                 //Add to exercise space
                 exerciseSpace.Hamsters.Enqueue(hamster);
+                //hamsterContext.ExerciseSpace.Hamsters
             }
 
             //Remove the exercise hamsters from the cages the cages (emptyCages)
@@ -192,7 +240,8 @@ namespace tentamen_hamster
 
             for (int i = 0; i < cageHamsters.Count(); i++)
             {
-                //hamsterContext.Cages.Hamst
+                //cageHamsters.Select
+                //hamsterContext.Cages.Hamsters
             }
 
             //Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
@@ -281,10 +330,10 @@ namespace tentamen_hamster
             }
         }
 
-        static void WriteToLog(object state)
+        static void WriteToLog()
         {
             string logTime = curTime.ToString("HH:mm");
-            string logData = $"Tick {tickCounter} : Day {curDay} : Time {logTime}\n";
+            string logData = $"Tick {TickCounter} : Day {curDay} : Time {logTime}\n";
 
             FileWriter.WriteData("hamster_log", logData);
         }
