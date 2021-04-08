@@ -53,7 +53,7 @@ namespace tentamen_hamster
 
             //The day starts at 7 at the morning
             curTime = DateTime.Parse("07:00");
-            curDay = 0;
+            curDay = 1;
 
             tickCounter = 0;
 
@@ -117,15 +117,16 @@ namespace tentamen_hamster
             if(TickCounter >= 100)
             {
                 curDay++;
+                TickCounter = 0;
             }
 
-            if(curDay >= daysToRun)
+            if(curDay >= daysToRun + 1)
             {
-                //End of program
-                Console.WriteLine("End of program");
-
                 //Stop this timer
                 timers[2].Change(Timeout.Infinite, Timeout.Infinite);
+                
+                //End of program
+                Console.WriteLine("End of program");
             }
         }
 
