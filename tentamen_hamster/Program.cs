@@ -46,7 +46,7 @@ namespace tentamen_hamster
 
         static void Main(string[] args)
         {
-            Console.ForegroundColor = ConsoleColor.Magenta;
+            //Console.ForegroundColor = ConsoleColor.Magenta;
 
             hamsterContext = new AppContext();
 
@@ -140,6 +140,7 @@ namespace tentamen_hamster
             }
         }
 
+        //Remake so that hamsters don't get removed and added, just id change
         private static void Exercise(object state)
         {
             //Console.WriteLine("tick");
@@ -167,7 +168,8 @@ namespace tentamen_hamster
                     hamsterContext.Hamsters.Add(exerciseSpace.Hamsters.Dequeue());
                 }
 
-                //hamsterContext.SaveChanges();
+                hamsterContext.SaveChanges();
+                ;
 
                 Console.WriteLine("Hamsters added back, current hamsters: ");
 
@@ -189,6 +191,7 @@ namespace tentamen_hamster
             ticksPerSec = int.Parse(Console.ReadLine());
         }
 
+        //Remake so that hamsters don't get removed and added, just id change
         static void TakeToExercise(Gender gender)
         {
             //This is to know which cages to put back the hamster when they 
@@ -228,6 +231,7 @@ namespace tentamen_hamster
             }
 
             hamsterContext.SaveChanges();
+            //;
 
             Console.WriteLine(" \n After: ");
 
@@ -240,7 +244,7 @@ namespace tentamen_hamster
             //Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
             //Console.WriteLine("Cages context count: " + hamsterContext.Cages.Count());
 
-            hamsterContext.SaveChanges();
+            //hamsterContext.SaveChanges();
         }
 
         static void ImportHamsters()
@@ -302,7 +306,10 @@ namespace tentamen_hamster
                     foreach (var hamster in hamsters)
                     {
                         hamsterContext.Hamsters.Remove(hamster);
+                        hamsterContext.SaveChanges();
                     }
+
+                    ;
                 
                 } catch(Exception e)
                 {
@@ -317,6 +324,7 @@ namespace tentamen_hamster
                         hamsterContext.SaveChanges();
                     }
                 }
+                ;
             }
 
             if (hamsterContext.Cages.Count() < 10)
@@ -329,6 +337,7 @@ namespace tentamen_hamster
                         hamsterContext.SaveChanges();
                     }
                 }
+                ;
 
                 foreach (Cage cage in femaleCages)
                 {
@@ -338,6 +347,7 @@ namespace tentamen_hamster
                         hamsterContext.SaveChanges();
                     }
                 }
+                ;
             }
         }
 

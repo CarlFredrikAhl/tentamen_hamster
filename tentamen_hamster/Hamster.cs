@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace tentamen_hamster
@@ -7,6 +8,8 @@ namespace tentamen_hamster
     public class Hamster
     {
         public virtual Cage Cage { get; set; }
+
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int HamsterId { get; set; }
         
         //Write code in set to start events when activity changes
