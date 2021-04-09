@@ -9,10 +9,17 @@ namespace tentamen_hamster
     {
         public static void WriteData(string filePath, string data)
         {
-            using (StreamWriter writer = new StreamWriter(filePath, true))
+            try 
             {
-                writer.WriteLine(data);
-                writer.Flush();
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine(data);
+                    writer.Flush();
+                }
+            
+            } catch(IOException ioe)
+            {
+
             }
         } 
     }
