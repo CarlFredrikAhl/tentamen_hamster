@@ -33,7 +33,7 @@ namespace tentamen_hamster
             set
             {
                 //Write to log-file
-                //WriteToLog();
+                WriteToLog();
                 tickCounter = value;
             }
         }
@@ -78,7 +78,6 @@ namespace tentamen_hamster
                 //Task tickerTask = Task.Run(TickerHandlerAsync);
 
                 timers[0] = new Timer(new TimerCallback(Exercise), null, 0, (1000 / ticksPerSec));
-                //timers[1] = new Timer(new TimerCallback(WriteToLog), null, 0, (1000 / ticksPerSec));
                 timers[2] = new Timer(new TimerCallback(TickerHandler), null, 0, 1000 / ticksPerSec);
 
                 //Possability to stop timers
@@ -110,8 +109,6 @@ namespace tentamen_hamster
 
         private static void TickerHandler(object state)
         {
-            WriteToLog();
-
             bool changedDay = false;
 
             //New day
@@ -296,7 +293,7 @@ namespace tentamen_hamster
 
             //Add to database
 
-            if (hamsterContext.Hamsters.Count() < 30)
+            if (hamsterContext.Hamsters.Count() != 0)
             {
                 //Remove the hamsters if there are any already
                 try
@@ -315,16 +312,15 @@ namespace tentamen_hamster
                 {
 
                 }
+            }
 
-                foreach (var hamster in hamsters)
+            foreach (var hamster in hamsters)
+            {
+                if (hamsterContext.Hamsters.Count() < 30)
                 {
-                    if(hamsterContext.Hamsters.Count() < 30)
-                    {
-                        hamsterContext.Hamsters.Add(hamster);
-                        hamsterContext.SaveChanges();
-                    }
+                    hamsterContext.Hamsters.Add(hamster);
+                    hamsterContext.SaveChanges();
                 }
-                ;
             }
 
             if (hamsterContext.Cages.Count() < 10)
@@ -337,7 +333,6 @@ namespace tentamen_hamster
                         hamsterContext.SaveChanges();
                     }
                 }
-                ;
 
                 foreach (Cage cage in femaleCages)
                 {
@@ -347,7 +342,6 @@ namespace tentamen_hamster
                         hamsterContext.SaveChanges();
                     }
                 }
-                ;
             }
         }
 
