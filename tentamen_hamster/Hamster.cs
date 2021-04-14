@@ -18,37 +18,37 @@ namespace tentamen_hamster
         public int Age { get; set; }
 
         [Column("Gender")]
-        public string _Gender { get; set; }
-
-        [NotMapped]
-        public Gender Gender
+        public string _Gender 
         {
             get
             {
-                if (_Gender == "Male")
+                if (Gender == Gender.Male)
                 {
-                    return Gender.Male;
+                    return "Male";
 
                 }
                 else
                 {
-                    return Gender.Female;
+                    return "Female";
                 }
             }
 
             set
             {
-                if (_Gender == "Male")
+                if (Gender == Gender.Male)
                 {
-                    Gender = Gender.Male;
+                    _Gender = "Male";
 
                 }
                 else
                 {
-                    Gender = Gender.Female;
+                    _Gender = "Female";
                 }
             }
         }
+
+        [NotMapped]
+        public Gender Gender { get; set; }
         public string OwnerName { get; set; }
         public DateTime? TimeCheckedIn { get; set; }
         public DateTime? TimeLastExercise { get; set; }
