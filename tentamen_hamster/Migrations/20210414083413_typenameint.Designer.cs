@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using tentamen_hamster;
 
 namespace tentamen_hamster.Migrations
 {
     [DbContext(typeof(AppContext))]
-    partial class AppContextModelSnapshot : ModelSnapshot
+    [Migration("20210414083413_typenameint")]
+    partial class typenameint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,9 +90,8 @@ namespace tentamen_hamster.Migrations
                     b.Property<int?>("ExerciseSpaceId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                    b.Property<int>("Gender")
+                        .HasColumnType("int")
                         .HasColumnName("Gender1");
 
                     b.Property<string>("Name")
@@ -105,8 +106,8 @@ namespace tentamen_hamster.Migrations
                     b.Property<DateTime?>("TimeLastExercise")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("_Gender")
-                        .HasColumnType("nvarchar(max)")
+                    b.Property<int>("_Gender")
+                        .HasColumnType("int")
                         .HasColumnName("Gender");
 
                     b.HasKey("HamsterId");

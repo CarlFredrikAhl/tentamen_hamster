@@ -9,7 +9,6 @@ namespace tentamen_hamster
     {
         public virtual Cage Cage { get; set; }
 
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int HamsterId { get; set; }
 
         //Write code in set to start events when activity changes
@@ -18,7 +17,7 @@ namespace tentamen_hamster
         public int Age { get; set; }
 
         [Column("Gender")]
-        public string _Gender 
+        public string _Gender
         {
             get
             {
