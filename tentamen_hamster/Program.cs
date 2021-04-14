@@ -72,7 +72,7 @@ namespace tentamen_hamster
                 Menu();
 
                 //emptyCages = new List<Cage>();
-                TakeToExercise(Gender.Female);
+                TakeToExercise("Female");
 
                 //TickerHandlerThread
                 //Task tickerTask = Task.Run(TickerHandlerAsync);
@@ -189,7 +189,7 @@ namespace tentamen_hamster
         }
 
         //Remake so that hamsters don't get removed and added, just id change
-        static void TakeToExercise(Gender gender)
+        static void TakeToExercise(string gender)
         {
             //This is to know which cages to put back the hamster when they 
             //get dequeued from exerciseSpace
@@ -248,12 +248,12 @@ namespace tentamen_hamster
         {
             hamsters = ProcessFile("Hamsterlista30.csv");
 
-            foreach (Hamster hamster in hamsters.Where(hamster => hamster.Gender == Gender.Male))
+            foreach (Hamster hamster in hamsters.Where(hamster => hamster.Gender == "Male"))
             {
                 maleHamsters.Push(hamster);
             }
 
-            foreach (Hamster hamster in hamsters.Where(hamster => hamster.Gender == Gender.Female))
+            foreach (Hamster hamster in hamsters.Where(hamster => hamster.Gender == "Female"))
             {
                 femaleHamsters.Push(hamster);
             }
@@ -373,7 +373,7 @@ namespace tentamen_hamster
                 {
                     Name = columns[0],
                     Age = int.Parse(columns[1]),
-                    Gender = Gender.Female,
+                    Gender = "Female",
                     OwnerName = columns[3],
                     Activity = Activity.Arrival,
                     TimeCheckedIn = DateTime.Now,
@@ -387,7 +387,7 @@ namespace tentamen_hamster
                 {
                     Name = columns[0],
                     Age = int.Parse(columns[1]),
-                    Gender = Gender.Male,
+                    Gender = "Male",
                     OwnerName = columns[3],
                     Activity = Activity.Arrival,
                     TimeCheckedIn = DateTime.Now,
