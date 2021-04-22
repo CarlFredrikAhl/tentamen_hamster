@@ -137,7 +137,6 @@ namespace tentamen_hamster
             }
         }
 
-        //Remake so that hamsters don't get removed and added, just id change
         private static void Exercise(object state)
         {
             //Console.WriteLine("tick");
@@ -166,7 +165,6 @@ namespace tentamen_hamster
                 }
 
                 hamsterContext.SaveChanges();
-                ;
 
                 Console.WriteLine("Hamsters added back, current hamsters: ");
 
@@ -224,7 +222,6 @@ namespace tentamen_hamster
             // var cageHamsters = hamsterContext.Hamsters.Select(x => x.Name);
             foreach (var hamster in exerciseHamsters)
             {
-                hamsterContext.Hamsters.Remove(hamster);
             }
 
             hamsterContext.SaveChanges();
@@ -305,8 +302,6 @@ namespace tentamen_hamster
                         hamsterContext.Hamsters.Remove(hamster);
                         hamsterContext.SaveChanges();
                     }
-
-                    ;
                 
                 } catch(Exception e)
                 {
