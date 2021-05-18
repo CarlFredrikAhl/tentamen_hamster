@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
+
 
 namespace tentamen_hamster
 {
@@ -38,7 +38,7 @@ namespace tentamen_hamster
             }
         }
 
-        static AppContext hamsterContext;
+        //static AppContext hamsterContext;
 
         //Current time and day
         public static DateTime curTime;
@@ -48,7 +48,7 @@ namespace tentamen_hamster
         {
             //Console.ForegroundColor = ConsoleColor.Magenta;
 
-            hamsterContext = new AppContext();
+            //hamsterContext = new AppContext();
 
             //The day starts at 7 at the morning
             curTime = DateTime.Parse("07:00");
@@ -56,10 +56,10 @@ namespace tentamen_hamster
 
             tickCounter = 1;
 
-            using (hamsterContext)
-            {
+            //using (hamsterContext)
+            //{
                 exerciseSpace = new ExerciseSpace();
-                exerciseSpace.Hamsters = new Queue<Hamster>();
+                exerciseSpace.Hamsters = new List<Hamster>();                
                 maleCages = new Cage[5];
                 femaleCages = new Cage[5];
 
@@ -104,7 +104,7 @@ namespace tentamen_hamster
                         }
                     }
                 }
-            }
+            //}
         }
 
         private static void TickerHandler(object state)
@@ -140,42 +140,41 @@ namespace tentamen_hamster
         //Remake so that hamsters don't get removed and added, just id change
         private static void Exercise(object state)
         {
-            //Console.WriteLine("tick");
-
-            //Console.WriteLine("Tick: " + TickCounter);
-
-            if (TickCounter >= 10)
+            using (var hamsterContext = new AppContext())
             {
-                Console.WriteLine("Time's up, change hamsters");
-                Console.WriteLine("Current hamsters");
+                //Console.WriteLine("tick");
 
-                for (int i = 0; i < exerciseSpace.Hamsters.Count; i++)
+                //Console.WriteLine("Tick: " + TickCounter);
+
+                if (TickCounter >= 10)
                 {
-                    Console.WriteLine(exerciseSpace.Hamsters.ElementAt(i).Name);
+                    Console.WriteLine("Time's up, change hamsters");
+                    Console.WriteLine("Current hamsters");
+
+                    for (int i = 0; i < exerciseSpace.Hamsters.Count; i++)
+                    {
+                        Console.WriteLine(exerciseSpace.Hamsters.ElementAt(i).Name);
+                    }
+
+                    var exercisedHamsters = hamsterContext.ExerciseSpace.Select(space => space.Hamsters).ToList();
+
+                    //Removes the hamster from exerciseSpace
+                    foreach (Hamster hamster in exercisedHamsters)
+                    {
+                        
+                    }
+
+                   // hamsterContext.SaveChanges();
+
+                    Console.WriteLine("Hamsters added back, current hamsters: ");
+
+                    foreach (var item in hamsterContext.Hamsters.Select(x => x.Name))
+                    {
+                        Console.WriteLine(item);
+                    }
+
+                    timers[0].Change(Timeout.Infinite, Timeout.Infinite);
                 }
-
-                //Console.WriteLine("Cages to put back these hamsters to: ");
-                //foreach (var cage in emptyCages.Distinct())
-                //{
-                //    Console.WriteLine(cage.CageId);
-                //}
-
-                for (int i = 0; i < exerciseSpace.Hamsters.Count; i++)
-                {
-                    hamsterContext.Hamsters.Add(exerciseSpace.Hamsters.Dequeue());
-                }
-
-                hamsterContext.SaveChanges();
-                ;
-
-                Console.WriteLine("Hamsters added back, current hamsters: ");
-
-                foreach (var item in hamsterContext.Hamsters.Select(x => x.Name))
-                {
-                    Console.WriteLine(item);
-                }
-
-                timers[0].Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
 
@@ -191,57 +190,57 @@ namespace tentamen_hamster
         //Remake so that hamsters don't get removed and added, just id change
         static void TakeToExercise(string gender)
         {
-            //This is to know which cages to put back the hamster when they 
-            //get dequeued from exerciseSpace
-            //emptyCages = new List<Cage>();
-
-            var exerciseHamsters = hamsterContext.Hamsters.OrderBy(hamster => hamster.TimeLastExercise)
-                .Where(hamster => hamster.Gender == gender).Select(hamster => hamster).Take(6);
-            List<Hamster> hamsterLista = exerciseHamsters.ToList();
-
-            //Temporary code to see which hamsters are in the cages
-            Console.WriteLine("Before removing 6 hamsters: ");
-            var query1 = hamsterContext.Hamsters.Select(x => x.Name);
-
-            foreach (var item in query1)
+            using (var hamsterContext = new AppContext())
             {
-                Console.WriteLine(item);
+                //This is to know which cages to put back the hamster when they 
+                //get dequeued from exerciseSpace
+                //emptyCages = new List<Cage>();
+
+                var exerciseHamsters = hamsterContext.Hamsters.OrderBy(hamster => hamster.TimeLastExercise)
+                    .Where(hamster => hamster.Gender == gender).Select(hamster => hamster).Take(6);
+                //List<Hamster> hamsterLista = exerciseHamsters.ToList();
+
+                //Temporary code to see which hamsters are in the cages
+                Console.WriteLine("Before taking out 6 hamsters: ");
+                var query1 = hamsterContext.Hamsters.Select(x => x.Name);
+
+                foreach (var item in query1)
+                {
+                    Console.WriteLine(item);
+                }
+
+                //Looping through the exercise hamsters and take them to exercise space
+                foreach (Hamster hamster in exerciseHamsters)
+                {
+                    exerciseSpace.Hamsters.Add(hamster);
+                }
+                hamsterContext.ExerciseSpace.Add(exerciseSpace);
+
+                //Take out of cage
+                //for (int i = 0; i < exerciseHamsters.Count(); i++)
+                //{
+                //    hamsterContext.Hamsters
+                //}
+
+                //Write out the hamsters that are still in their cages
+                foreach (var item in query1)
+                {
+                    Console.WriteLine(item);
+                }
+
+                hamsterContext.SaveChanges();
+                //;
+
+                Console.WriteLine(" \n After: ");
+
+                //This is to see all the hamsters
+                foreach (var item in query1)
+                {
+                    Console.WriteLine(item);
+                }
+
+                //hamsterContext.SaveChanges();
             }
-
-            //Looping through the exercise hamsters and take them to exercise space
-            foreach (Hamster hamster in hamsterLista)
-            {
-                //Cage hamsterCage = hamsterContext.Cages.Single(x => x.Hamsters.Contains(hamster));
-                //emptyCages.Add(hamsterCage);
-
-                //Add to exercise space
-                exerciseSpace.Hamsters.Enqueue(hamster);
-                //hamsterContext.ExerciseSpace.Hamsters
-            }
-
-            //Remove the exercise hamsters from the cages the cages (emptyCages)
-
-            // var cageHamsters = hamsterContext.Hamsters.Select(x => x.Name);
-            foreach (var hamster in exerciseHamsters)
-            {
-                hamsterContext.Hamsters.Remove(hamster);
-            }
-
-            hamsterContext.SaveChanges();
-            //;
-
-            Console.WriteLine(" \n After: ");
-
-            //This is to see all the hamsters
-            foreach (var item in query1)
-            {
-                Console.WriteLine(item);
-            }
-
-            //Console.WriteLine("Hamster context count: " + hamsterContext.Hamsters.Count());
-            //Console.WriteLine("Cages context count: " + hamsterContext.Cages.Count());
-
-            //hamsterContext.SaveChanges();
         }
 
         static void ImportHamsters()
@@ -261,85 +260,89 @@ namespace tentamen_hamster
 
         static void CheckingIn()
         {
-            //Males
-            //Loop 5 times
-            for (int i = 0; i < maleCages.Length; i++)
+            using (var hamsterContext = new AppContext())
             {
-                maleCages[i] = new Cage();
-                //maleCages[i].Hamsters = new List<Hamster>();
-
-                //Loop 3 times
-                for (int y = 0; y < 3; y++)
+                //Males
+                //Loop 5 times
+                for (int i = 0; i < maleCages.Length; i++)
                 {
-                    if (maleHamsters.Count != 0)
-                        maleCages[i].Hamsters.Add(maleHamsters.Pop());
-                }
-            }
+                    maleCages[i] = new Cage();
+                    //maleCages[i].Hamsters = new List<Hamster>();
 
-            //Females
-            //Loop 5 times
-            for (int i = 0; i < femaleCages.Length; i++)
-            {
-                femaleCages[i] = new Cage();
-                //femaleCages[i].Hamsters = new List<Hamster>();
-
-                //Loop 3 times
-                for (int y = 0; y < 3; y++)
-                {
-                    if (femaleHamsters.Count != 0)
-                        femaleCages[i].Hamsters.Add(femaleHamsters.Pop());
-                }
-            }
-
-            //Add to database
-
-            if (hamsterContext.Hamsters.Count() != 0)
-            {
-                //Remove the hamsters if there are any already
-                try
-                {
-                    var hamsters = from hamster in hamsterContext.Hamsters select hamster;
-
-                    foreach (var hamster in hamsters)
+                    //Loop 3 times
+                    for (int y = 0; y < 3; y++)
                     {
-                        hamsterContext.Hamsters.Remove(hamster);
-                        hamsterContext.SaveChanges();
+                        if (maleHamsters.Count != 0)
+                            maleCages[i].Hamsters.Add(maleHamsters.Pop());
                     }
-
-                    ;
-                
-                } catch(Exception e)
-                {
-
                 }
-            }
 
-            foreach (var hamster in hamsters)
-            {
-                if (hamsterContext.Hamsters.Count() < 30)
+                //Females
+                //Loop 5 times
+                for (int i = 0; i < femaleCages.Length; i++)
                 {
-                    hamsterContext.Hamsters.Add(hamster);
-                    hamsterContext.SaveChanges();
-                }
-            }
+                    femaleCages[i] = new Cage();
+                    //femaleCages[i].Hamsters = new List<Hamster>();
 
-            if (hamsterContext.Cages.Count() < 10)
-            {
-                foreach (Cage cage in maleCages)
-                {
-                    if (hamsterContext.Cages.Count() < 10)
+                    //Loop 3 times
+                    for (int y = 0; y < 3; y++)
                     {
-                        hamsterContext.Cages.Add(cage);
+                        if (femaleHamsters.Count != 0)
+                            femaleCages[i].Hamsters.Add(femaleHamsters.Pop());
+                    }
+                }
+
+                //Add to database
+
+                if (hamsterContext.Hamsters.Count() != 0)
+                {
+                    //Remove the hamsters if there are any already
+                    try
+                    {
+                        var hamsters = from hamster in hamsterContext.Hamsters select hamster;
+
+                        foreach (var hamster in hamsters)
+                        {
+                            hamsterContext.Hamsters.Remove(hamster);
+                            hamsterContext.SaveChanges();
+                        }
+
+                        ;
+
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+
+                foreach (var hamster in hamsters)
+                {
+                    if (hamsterContext.Hamsters.Count() < 30)
+                    {
+                        hamsterContext.Hamsters.Add(hamster);
                         hamsterContext.SaveChanges();
                     }
                 }
 
-                foreach (Cage cage in femaleCages)
+                if (hamsterContext.Cages.Count() < 10)
                 {
-                    if (hamsterContext.Cages.Count() < 10)
+                    foreach (Cage cage in maleCages)
                     {
-                        hamsterContext.Cages.Add(cage);
-                        hamsterContext.SaveChanges();
+                        if (hamsterContext.Cages.Count() < 10)
+                        {
+                            hamsterContext.Cages.Add(cage);
+                            hamsterContext.SaveChanges();
+                        }
+                    }
+
+                    foreach (Cage cage in femaleCages)
+                    {
+                        if (hamsterContext.Cages.Count() < 10)
+                        {
+                            hamsterContext.Cages.Add(cage);
+                            hamsterContext.SaveChanges();
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,7 +18,7 @@ namespace tentamen_hamster
         {
             if (!builder.IsConfigured) 
             {
-                builder.UseSqlServer("Server=LAPTOP-D5UUETOL\\SQLEXPRESS;Database=advCarlFredrikAhl5;Trusted_Connection=True; MultipleActiveResultSets=true;");
+                builder.UseSqlServer("Server=LAPTOP-D5UUETOL\\SQLEXPRESS;Database=advCarlFredrikAhl6;Trusted_Connection=True; MultipleActiveResultSets=true;");
                 builder.UseLazyLoadingProxies();
             }
         }
