@@ -137,7 +137,6 @@ namespace tentamen_hamster
             }
         }
 
-        //Remake so that hamsters don't get removed and added, just id change
         private static void Exercise(object state)
         {
             using (var hamsterContext = new AppContext())
@@ -222,11 +221,11 @@ namespace tentamen_hamster
                 //    hamsterContext.Hamsters
                 //}
 
-                //Write out the hamsters that are still in their cages
-                foreach (var item in query1)
-                {
-                    Console.WriteLine(item);
-                }
+            // var cageHamsters = hamsterContext.Hamsters.Select(x => x.Name);
+            foreach (var hamster in exerciseHamsters)
+            {
+                hamsterContext.Hamsters.Remove(hamster);
+            }
 
                 hamsterContext.SaveChanges();
                 //;
@@ -301,17 +300,16 @@ namespace tentamen_hamster
                     {
                         var hamsters = from hamster in hamsterContext.Hamsters select hamster;
 
-                        foreach (var hamster in hamsters)
-                        {
-                            hamsterContext.Hamsters.Remove(hamster);
-                            hamsterContext.SaveChanges();
-                        }
-
-                        ;
-
-                    }
-                    catch (Exception e)
+                    foreach (var hamster in hamsters)
                     {
+                        hamsterContext.Hamsters.Remove(hamster);
+                        hamsterContext.SaveChanges();
+                    }
+
+                    ;
+                
+                } catch(Exception e)
+                {
 
                     }
                 }
