@@ -7,7 +7,7 @@ namespace tentamen_hamster
 {
     public class Hamster
     {
-        public virtual Cage Cage { get; set; }
+        public virtual Cage? Cage { get; set; }
 
         public int HamsterId { get; set; }
 
