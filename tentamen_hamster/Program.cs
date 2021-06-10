@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,52 +59,52 @@ namespace tentamen_hamster
 
             //using (hamsterContext)
             //{
-                exerciseSpace = new ExerciseSpace();
-                exerciseSpace.Hamsters = new List<Hamster>();                
-                maleCages = new Cage[5];
-                femaleCages = new Cage[5];
+            exerciseSpace = new ExerciseSpace();
+            exerciseSpace.Hamsters = new List<Hamster>();
+            maleCages = new Cage[5];
+            femaleCages = new Cage[5];
 
-                maleHamsters = new Stack<Hamster>();
-                femaleHamsters = new Stack<Hamster>();
+            maleHamsters = new Stack<Hamster>();
+            femaleHamsters = new Stack<Hamster>();
 
-                ImportHamsters();
-                CheckingIn();
+            ImportHamsters();
+            CheckingIn();
 
-                Menu();
+            Menu();
 
-                //emptyCages = new List<Cage>();
-                TakeToExercise("Female");
+            //emptyCages = new List<Cage>();
+            TakeToExercise("Female");
 
-                //TickerHandlerThread
-                //Task tickerTask = Task.Run(TickerHandlerAsync);
+            //TickerHandlerThread
+            //Task tickerTask = Task.Run(TickerHandlerAsync);
 
-                timers[0] = new Timer(new TimerCallback(Exercise), null, 0, (1000 / ticksPerSec));
-                timers[2] = new Timer(new TimerCallback(TickerHandler), null, 0, 1000 / ticksPerSec);
+            timers[0] = new Timer(new TimerCallback(Exercise), null, 0, (1000 / ticksPerSec));
+            timers[2] = new Timer(new TimerCallback(TickerHandler), null, 0, 1000 / ticksPerSec);
 
-                //Possability to stop timers
-                while (true)
+            //Possability to stop timers
+            while (true)
+            {
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (key.KeyChar == 's')
                 {
-                    ConsoleKeyInfo key = Console.ReadKey();
-                    if (key.KeyChar == 's')
+                    for (int i = 0; i < timers.Length; i++)
                     {
-                        for (int i = 0; i < timers.Length; i++)
+                        if (timers[i] == null)
                         {
-                            if (timers[i] == null)
-                            {
-                                Console.WriteLine(
-                                    Environment.NewLine +
-                                    "Timer Not " +
-                                    "Yet Started" +
-                                    Environment.NewLine);
-                                continue;
-                            }
-                            else
-                            {
-                                timers[i].Change(Timeout.Infinite, Timeout.Infinite);
-                            }
+                            Console.WriteLine(
+                                Environment.NewLine +
+                                "Timer Not " +
+                                "Yet Started" +
+                                Environment.NewLine);
+                            continue;
+                        }
+                        else
+                        {
+                            timers[i].Change(Timeout.Infinite, Timeout.Infinite);
                         }
                     }
                 }
+            }
             //}
         }
 
@@ -160,10 +161,10 @@ namespace tentamen_hamster
                     //Removes the hamster from exerciseSpace
                     foreach (Hamster hamster in exercisedHamsters)
                     {
-                        
+
                     }
 
-                   // hamsterContext.SaveChanges();
+                    // hamsterContext.SaveChanges();
 
                     Console.WriteLine("Hamsters added back, current hamsters: ");
 
@@ -201,7 +202,7 @@ namespace tentamen_hamster
 
                 //Temporary code to see which hamsters are in the cages
                 Console.WriteLine("Before taking out 6 hamsters: ");
-                var query1 = hamsterContext.Hamsters.Select(x => x.Name);
+                var query1 = hamsterContext.Hamsters.Select(x => x.Name).ToList();
 
                 foreach (var item in query1)
                 {
@@ -215,22 +216,15 @@ namespace tentamen_hamster
                 }
                 hamsterContext.ExerciseSpace.Add(exerciseSpace);
 
-                //Take out of cage
-                //for (int i = 0; i < exerciseHamsters.Count(); i++)
-                //{
-                //    hamsterContext.Hamsters
-                //}
-
-            // var cageHamsters = hamsterContext.Hamsters.Select(x => x.Name);
-            foreach (var hamster in exerciseHamsters)
-            {
-                hamsterContext.Hamsters.Remove(hamster);
-            }
-
-                hamsterContext.SaveChanges();
-                //;
+                //Take out of cage by settng the Id to null
+                foreach (var hamster in exerciseHamsters)
+                {
+                    RemoveHamster(hamster.HamsterId);
+                }
 
                 Console.WriteLine(" \n After: ");
+
+                query1 = hamsterContext.Hamsters.Where(x => x.Cage != null).Select(x => x.Name).ToList();
 
                 //This is to see all the hamsters
                 foreach (var item in query1)
@@ -300,16 +294,17 @@ namespace tentamen_hamster
                     {
                         var hamsters = from hamster in hamsterContext.Hamsters select hamster;
 
-                    foreach (var hamster in hamsters)
-                    {
-                        hamsterContext.Hamsters.Remove(hamster);
-                        hamsterContext.SaveChanges();
-                    }
+                        foreach (var hamster in hamsters)
+                        {
+                            hamsterContext.Hamsters.Remove(hamster);
+                            hamsterContext.SaveChanges();
+                        }
 
                     ;
-                
-                } catch(Exception e)
-                {
+
+                    }
+                    catch (Exception e)
+                    {
 
                     }
                 }
@@ -395,6 +390,17 @@ namespace tentamen_hamster
                     TimeLastExercise = null
                 };
             }
+        }
+
+        public static void RemoveHamster(int hamsterId)
+        {
+            using (AppContext hamsterContext = new AppContext())
+            {
+                var hamster = hamsterContext.Hamsters.FirstOrDefault(x => x.HamsterId == hamsterId);
+                hamster.Cage = null;
+                hamsterContext.Hamsters.Update(hamster);
+                hamsterContext.SaveChanges();
+            } 
         }
     }
 }
